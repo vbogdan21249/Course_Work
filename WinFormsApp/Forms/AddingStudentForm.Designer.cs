@@ -50,11 +50,11 @@
             // 
             ClassComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             ClassComboBox.FormattingEnabled = true;
-            ClassComboBox.Items.AddRange(new object[] { "A1", "A2", "B1", "B2", "C1", "C2", "QQ" });
             ClassComboBox.Location = new Point(172, 64);
             ClassComboBox.Name = "ClassComboBox";
             ClassComboBox.Size = new Size(60, 23);
-            ClassComboBox.TabIndex = 9; 
+            ClassComboBox.TabIndex = 9;
+            ClassComboBox.SelectedIndexChanged += ClassComboBox_SelectedIndexChanged;
             // 
             // add_Button
             // 
@@ -99,6 +99,7 @@
             // 
             // RoomComboBox
             // 
+            RoomComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             RoomComboBox.Enabled = false;
             RoomComboBox.FormattingEnabled = true;
             RoomComboBox.Location = new Point(260, 150);
@@ -197,12 +198,13 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(413, 325);
+            ClientSize = new Size(412, 325);
             Controls.Add(groupBox1);
             Controls.Add(Cancel_Button);
             Controls.Add(add_Button);
             Name = "AddingStudentForm";
             Text = "AddingStudentForm";
+            FormClosed += AddingStudentForm_FormClosed;
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ResumeLayout(false);

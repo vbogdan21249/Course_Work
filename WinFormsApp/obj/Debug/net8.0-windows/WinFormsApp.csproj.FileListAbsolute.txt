@@ -31,8 +31,10 @@ D:\OOP\Course_Work\WinFormsApp\bin\Debug\net8.0-windows\runtimes\win-x64\native\
 D:\OOP\Course_Work\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.csproj.AssemblyReference.cache
 D:\OOP\Course_Work\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.Forms.DormsForm.resources
 D:\OOP\Course_Work\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.Forms.GroupsForm.resources
-D:\OOP\Course_Work\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.Forms.SearchForm.resources
 D:\OOP\Course_Work\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.csproj.CopyComplete
 D:\OOP\Course_Work\WinFormsApp\bin\Debug\net8.0-windows\ClassLibrary1.dll
 D:\OOP\Course_Work\WinFormsApp\bin\Debug\net8.0-windows\ClassLibrary1.pdb
 D:\OOP\Course_Work\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.Forms.AddingStudentForm.resources
+D:\OOP\Course_Work\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.sourcelink.json
+D:\OOP\Course_Work\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.Forms.AddingClassForm.resources
+D:\OOP\Course_Work\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.Properties.Resources.resources

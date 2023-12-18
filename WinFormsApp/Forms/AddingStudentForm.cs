@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace WinFormsApp.Forms
@@ -16,10 +18,21 @@ namespace WinFormsApp.Forms
         public AddingStudentForm()
         {
             InitializeComponent();
-            ClassComboBox.SelectedIndex = ClassComboBox.Items.Count - 1;
+            InitializeComboBox();
+
             DormitoryComboBox.SelectedIndex = 0;
         }
-        
+        private void InitializeComboBox()
+        {
+            StudentsDAO studentsDAO = new StudentsDAO();
+            DataTable dtClasses = studentsDAO.GetClassesData();
+            ClassComboBox.DataSource = dtClasses;
+            ClassComboBox.DisplayMember = "Name";
+            ClassComboBox.ValueMember = "ID";
+            ClassComboBox.SelectedIndex = 0;
+        }
+
+
         private void dormitoryCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             DormitoryComboBox.Enabled = dormitoryCheckBox.Checked;
@@ -41,13 +54,27 @@ namespace WinFormsApp.Forms
                 Class_ID = ClassComboBox.SelectedIndex,
                 Dormitory_ID = (dormitoryCheckBox.Checked) ? DormitoryComboBox.SelectedIndex : null,
                 Room_ID = (dormitoryCheckBox.Checked) ? DormitoryComboBox.SelectedIndex : null,
-                //ClassNumber = ClassComboBox.Text,
-                //DormitoryNumber = (dormitoryCheckBox.Checked) ? Convert.ToInt32(DormitoryComboBox.SelectedItem) : 0,
-                //RoomNumber = (dormitoryCheckBox.Checked) ? Convert.ToInt32(RoomComboBox.SelectedItem) : 0
+
             };
             StudentsDAO studentsDAO = new StudentsDAO();
             int result = studentsDAO.addStudent(student);
             MessageBox.Show(result + " new row(s) inserted");
+        }
+
+        private void ClassComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ClassComboBox.SelectedItem != null)
+            {
+                
+                DataRowView selectedRow = (DataRowView)ClassComboBox.SelectedItem;
+                int selectedID = Convert.ToInt32(selectedRow["ID"]);
+
+            }
+        }
+
+        private void AddingStudentForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Hide();
         }
     }
 }

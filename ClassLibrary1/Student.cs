@@ -15,9 +15,15 @@ namespace WinFormsApp
         //public string ClassNumber { get; set; }
         //public int DormitoryNumber { get; set; }
         //public int RoomNumber { get; set; }
-        public int? Class_ID { get; set; }
-        public int? Dormitory_ID { get; set; } = 0;
-        public int? Room_ID { get; set; } = 0;
+        public string ClassName { get; set; }
+         public int? Dormitory { get; set; }
+        public int? Room { get; set; }
+       
+
+
+        public int? Class_ID { get; set; } = 0;
+        public int? Dormitory_ID { get; set; } = null;
+        public int? Room_ID { get; set; } = null;
 
     }
 }

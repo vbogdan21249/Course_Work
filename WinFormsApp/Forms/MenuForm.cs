@@ -7,7 +7,7 @@ namespace WinFormsApp
         public MenuForm()
         {
             InitializeComponent();
-            this.ActiveControl = student_Button;
+
         }
 
         private void student_Button_Click(object sender, EventArgs e)
