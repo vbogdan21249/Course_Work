@@ -16,7 +16,7 @@ namespace WinFormsApp.Forms
         {
             InitializeComponent();
             StudentsDAO studentsDAO = new StudentsDAO();
-            dataGridViewUnallocatedStudents.DataSource = studentsDAO.getQQStudents();
+            dataGridViewUnallocatedStudents.DataSource = studentsDAO.GetQQStudents();
         }
         private void Cancel_Button_Click(object sender, EventArgs e)
         {
@@ -30,8 +30,8 @@ namespace WinFormsApp.Forms
             };
 
             StudentsDAO studentsDAO = new StudentsDAO();
-            int result = studentsDAO.addClass(classes);
-            MessageBox.Show(result + " new row(s) inserted");
+            studentsDAO.addClass(classes);
+
         }
 
         private void AddingClassForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -39,9 +39,5 @@ namespace WinFormsApp.Forms
             this.Hide();
         }
 
-        private void Cancel_Button_Click_1(object sender, EventArgs e)
-        {
-            this.Hide();
-        }
     }
 }

@@ -106,17 +106,18 @@
             RoomComboBox.Name = "RoomComboBox";
             RoomComboBox.Size = new Size(80, 23);
             RoomComboBox.TabIndex = 11;
+            RoomComboBox.SelectedIndexChanged += RoomComboBox_SelectedIndexChanged;
             // 
             // DormitoryComboBox
             // 
             DormitoryComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             DormitoryComboBox.Enabled = false;
             DormitoryComboBox.FormattingEnabled = true;
-            DormitoryComboBox.Items.AddRange(new object[] { "1", "2", "3", "4" });
             DormitoryComboBox.Location = new Point(172, 150);
             DormitoryComboBox.Name = "DormitoryComboBox";
             DormitoryComboBox.Size = new Size(82, 23);
             DormitoryComboBox.TabIndex = 10;
+            DormitoryComboBox.SelectedIndexChanged += DormitoryComboBox_SelectedIndexChanged;
             // 
             // dormitoryCheckBox
             // 
@@ -227,5 +228,6 @@
         private CheckBox dormitoryCheckBox;
         private TextBox txt_Patronymic;
         private TextBox txt_Surname;
+
     }
 }

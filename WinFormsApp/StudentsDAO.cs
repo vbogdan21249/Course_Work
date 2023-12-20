@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Xml.Linq;
 using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Common;
 using Org.BouncyCastle.Asn1.Mozilla;
 using Org.BouncyCastle.Pqc.Crypto.Utilities;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
@@ -19,185 +20,58 @@ namespace WinFormsApp
     internal class StudentsDAO
     {
         string connectionString = "Server=localhost;Port=3306;Database=students;Uid=root;Pwd=root;";
-        public List<Student> getAllStudents()
+
+        public DataTable GetStudentsData()
         {
-            List<Student> returnThese = new List<Student>();
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            connection.Open();
+            DataTable dtStudents = new DataTable();
 
-            //List<Classes> classes = new List<Classes>();
-            //MySqlCommand command = new MySqlCommand("SELECT * FROM classes", connection);
-            //using (MySqlDataReader reader = command.ExecuteReader())
-            //{
-            //    while (reader.Read())
-            //    {
-            //        Classes c = new Classes()
-            //        {
-            //            ID = reader.GetInt32(0),
-            //            Name = reader.GetString(1)
-            //        };
-            //        classes.Add(c);
-            //    }
-            //}
-            //MySqlCommand command = new MySqlCommand();
-            //command = new("SELECT * FROM students", connection);
-            //MySqlCommand command = new MySqlCommand("SELECT * FROM students", connection);
-            MySqlCommand command = new MySqlCommand("SELECT s.ID, s.Name, s.Surname, s.Patronymic, c.Name AS ClassName, d.Dormitory_Number, r.Room_Number FROM students s INNER JOIN classes c ON s.Class_ID = c.ID INNER JOIN dorms d ON s.Dormitory_ID = d.ID INNER JOIN rooms r ON s.Room_ID = r.ID", connection);
-
-            using (MySqlDataReader reader = command.ExecuteReader())
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                while (reader.Read())
-                {
-                    Student s = new Student()
-                    {
-                        ID = reader.GetInt32(0),
-                        FirstName = reader.GetString(1),
-                        SecondName = reader.GetString(2),
-                        ThirdName = reader.GetString(3),
-                        ClassName = reader.GetString(4),
-                        Dormitory = reader.GetInt32(5),
-                        Room = reader.GetInt32(6),
-                    };
+                connection.Open();
 
-                    returnThese.Add(s);
+                using (MySqlCommand command = new MySqlCommand(
+                    "SELECT s.ID, s.Name, s.Surname, s.Patronymic, c.Name AS ClassName, COALESCE(d.Dormitory_Number, 0) AS Dormitory_Number, COALESCE(r.Room_Number, 0) AS Room_Number " +
+                    "FROM students s " +
+                    "INNER JOIN classes c ON s.Class_ID = c.ID " +
+                    "LEFT JOIN dorms d ON s.Dormitory_ID = d.ID " +
+                    "LEFT JOIN rooms r ON s.Room_ID = r.ID", connection))
+                {
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
+                    {
+                        adapter.Fill(dtStudents);
+                    }
                 }
             }
-            connection.Close();
-            return returnThese;
+
+            return dtStudents;
         }
 
-
-
-
-        public List<Student> getQQStudents(int classID = 0)
+        public DataTable GetQQStudents(int classID = 0)
         {
-            List<Student> returnThese = new List<Student>();
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            connection.Open();
+            DataTable dtStudents = new DataTable();
 
-            List<Class> classes = new List<Class>();
-
-            //MySqlCommand command = new MySqlCommand("SELECT * FROM students WHERE Class_ID = @classID", connection);
-            //command.Parameters.AddWithValue("@classID", classID);
-
-            MySqlCommand command = new MySqlCommand("SELECT s.ID, s.Name, s.Surname, s.Patronymic, c.Name AS ClassName, d.Dormitory_Number, r.Room_Number FROM students s INNER JOIN classes c ON s.Class_ID = c.ID INNER JOIN dorms d ON s.Dormitory_ID = d.ID INNER JOIN rooms r ON s.Room_ID = r.ID WHERE s.Class_ID = @classID", connection);
-
-            command.Parameters.AddWithValue("@classID", classID);
-            using (MySqlDataReader reader = command.ExecuteReader())
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                while (reader.Read())
-                {
-                    Student s = new Student()
-                    {
-                        ID = reader.GetInt32(0),
-                        FirstName = reader.GetString(1),
-                        SecondName = reader.GetString(2),
-                        ThirdName = reader.GetString(3),
-                        ClassName = reader.GetString(4),
-                        Dormitory = reader.GetInt32(5),
-                        Room = reader.GetInt32(6),
-                    };
+                connection.Open();
 
-                    returnThese.Add(s);
+                MySqlCommand command = new MySqlCommand("SELECT s.ID, s.Name, s.Surname, s.Patronymic, c.Name AS ClassName, d.Dormitory_Number, r.Room_Number FROM students s INNER JOIN classes c ON s.Class_ID = c.ID INNER JOIN dorms d ON s.Dormitory_ID = d.ID INNER JOIN rooms r ON s.Room_ID = r.ID WHERE s.Class_ID = @classID", connection);
+
+                command.Parameters.AddWithValue("@classID", classID);
+
+                using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
+                {
+                    adapter.Fill(dtStudents);
                 }
+
+                connection.Close();
             }
 
-            connection.Close();
-            return returnThese;
-        }  // ---
-           //public List<Student> searchTitles(string searchTerm, ComboBox searchComboBox)
-           //{
-           //    List<Student> returnThese = new List<Student>();
-           //    MySqlConnection connection = new MySqlConnection
-           //        (connectionString);
-           //    connection.Open();
+            return dtStudents;
+        }
 
-        //    string searchWildPhrase = "%" + searchTerm + "%";
-
-        //    MySqlCommand command = new MySqlCommand();
-
-        //    string? selectedOption = searchComboBox.SelectedItem?.ToString();
-
-        //    command.CommandText = $"SELECT * FROM students WHERE {selectedOption} LIKE @search";
-        //    command.Parameters.AddWithValue("@search", searchWildPhrase);
-        //    command.Connection = connection;
-
-        //    using (MySqlDataReader reader = command.ExecuteReader())
-        //    {
-        //        while (reader.Read())
-        //        {
-        //            Student s = new Student()
-        //            {
-        //                ID = reader.GetInt32(0),
-        //                FirstName = reader.GetString(1),
-        //                SecondName = reader.GetString(2),
-        //                ThirdName = reader.GetString(3),
-        //                Class_ID = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
-        //                Dormitory_ID = reader.IsDBNull(5) ? 0 : reader.GetInt32(5),
-        //                Room_ID = reader.IsDBNull(6) ? 0 : reader.GetInt32(6),
-        //            };
-
-        //            returnThese.Add(s);
-        //        }
-        //    }
-        //    connection.Clone();
-        //    return returnThese;
-        //}
-
-
-
-        //public List<Student> searchTitles(string searchTerm, ComboBox searchComboBox) 
-        //{
-        //    List<Student> returnThese = new List<Student>();
-
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        connection.Open();
-
-        //        string? selectedOption = searchComboBox.SelectedItem?.ToString();
-
-        //        if (!string.IsNullOrEmpty(selectedOption))
-        //        {
-        //            using (MySqlCommand command = new MySqlCommand())
-        //            {
-        //                command.Connection = connection;
-        //                command.CommandText = $"SELECT s.ID, s.Name, s.Surname, s.Patronymic, c.Name AS ClassName, d.Dormitory_Number, r.Room_Number " +
-        //                                      $"FROM students s " +
-        //                                      $"INNER JOIN classes c ON s.Class_ID = c.ID " +
-        //                                      $"INNER JOIN dorms d ON s.Dormitory_ID = d.ID " +
-        //                                      $"INNER JOIN rooms r ON s.Room_ID = r.ID " +
-        //                                      $"WHERE {selectedOption} LIKE @search";
-
-        //                command.Parameters.AddWithValue("@search", $"%{searchTerm}%");
-
-        //                using (MySqlDataReader reader = command.ExecuteReader())
-        //                {
-        //                    while (reader.Read())
-        //                    {
-        //                        Student s = new Student()
-        //                        {
-        //                            ID = reader.GetInt32(0),
-        //                            FirstName = reader.GetString(1),
-        //                            SecondName = reader.GetString(2),
-        //                            ThirdName = reader.GetString(3),
-        //                            ClassName = reader.GetString(4),
-        //                            Dormitory = reader.GetInt32(5),
-        //                            Room = reader.GetInt32(6),
-        //                        };
-        //                        returnThese.Add(s);
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        //        connection.Close(); // Close the connection after processing the data
-        //    }
-
-        //    return returnThese;
-        //} // ---
-        public List<Student> searchTitles(string searchTerm, ComboBox searchComboBox)
+        public DataTable SearchTitles(string searchTerm, ComboBox searchComboBox)
         {
-            List<Student> returnThese = new List<Student>();
+            DataTable dtSearchResults = new DataTable();
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -221,36 +95,19 @@ namespace WinFormsApp
 
                     if (columnMapping.TryGetValue(selectedOption, out string mappedColumnName))
                     {
-                        using (MySqlCommand command = new MySqlCommand())
+                        using (MySqlDataAdapter adapter = new MySqlDataAdapter())
                         {
-                            command.Connection = connection;
-                            // Use the mapped column name in the SELECT and WHERE clauses
-                            command.CommandText = $"SELECT s.ID, s.Name, s.Surname, s.Patronymic, c.Name AS ClassName, d.Dormitory_Number, r.Room_Number " +
-                                                  $"FROM students s " +
-                                                  $"INNER JOIN classes c ON s.Class_ID = c.ID " +
-                                                  $"INNER JOIN dorms d ON s.Dormitory_ID = d.ID " +
-                                                  $"INNER JOIN rooms r ON s.Room_ID = r.ID " +
-                                                  $"WHERE {mappedColumnName} LIKE @search";
+                            adapter.SelectCommand = new MySqlCommand(
+                                $"SELECT s.ID, s.Name, s.Surname, s.Patronymic, c.Name AS ClassName, d.Dormitory_Number, r.Room_Number " +
+                                $"FROM students s " +
+                                $"INNER JOIN classes c ON s.Class_ID = c.ID " +
+                                $"INNER JOIN dorms d ON s.Dormitory_ID = d.ID " +
+                                $"INNER JOIN rooms r ON s.Room_ID = r.ID " +
+                                $"WHERE {mappedColumnName} LIKE @search", connection);
 
-                            command.Parameters.AddWithValue("@search", $"%{searchTerm}%");
+                            adapter.SelectCommand.Parameters.AddWithValue("@search", $"%{searchTerm}%");
 
-                            using (MySqlDataReader reader = command.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    Student s = new Student()
-                                    {
-                                        ID = reader.GetInt32(0),
-                                        FirstName = reader.GetString(1),
-                                        SecondName = reader.GetString(2),
-                                        ThirdName = reader.GetString(3),
-                                        ClassName = reader.GetString(4),
-                                        Dormitory = reader.GetInt32(5),
-                                        Room = reader.GetInt32(6),
-                                    };
-                                    returnThese.Add(s);
-                                }
-                            }
+                            adapter.Fill(dtSearchResults);
                         }
                     }
                 }
@@ -258,7 +115,7 @@ namespace WinFormsApp
                 connection.Close();
             }
 
-            return returnThese;
+            return dtSearchResults;
         }
 
         public int addStudent(Student student)
@@ -273,12 +130,13 @@ namespace WinFormsApp
             command.Parameters.AddWithValue("@class", student.Class_ID);
             command.Parameters.AddWithValue("@dormitory", student.Dormitory_ID);
             command.Parameters.AddWithValue("@room", student.Room_ID);
-
+            MessageBox.Show("New row inserted.");
             int newRows = command.ExecuteNonQuery();
             connection.Close();
 
             return newRows;
         }
+
         public int deleteStudent(int studentID)
         {
             MySqlConnection connection = new MySqlConnection(connectionString);
@@ -291,102 +149,119 @@ namespace WinFormsApp
             connection.Close();
             return result;
         }
-        public List<Class> getAllClasses()
+
+        public DataTable GetAllClasses()
         {
-            List<Class> returnThese = new List<Class>();
-            MySqlConnection connection = new MySqlConnection
-                (connectionString);
-            connection.Open();
+            DataTable dtClasses = new DataTable();
 
-            MySqlCommand command = new MySqlCommand("SELECT * FROM classes", connection);
-            using (MySqlDataReader reader = command.ExecuteReader())
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                while (reader.Read())
+                connection.Open();
+                using (MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT * FROM classes", connection))
                 {
-                    Class c = new Class()
-                    {
-                        ID = reader.GetInt32(0),
-                        Name = reader.GetString(1)
-                    };
 
-                    returnThese.Add(c);
+                    adapter.Fill(dtClasses);
                 }
             }
-            connection.Clone();
-            return returnThese;
+
+            return dtClasses;
         }
-        public List<Student> getStudentsForClass(int classesID)
+
+        public DataTable GetStudentsForClass(int classID)
         {
-            List<Student> returnThese = new List<Student>();
+            DataTable dtStudents = new DataTable();
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (MySqlDataAdapter adapter = new MySqlDataAdapter())
+                {
+                    adapter.SelectCommand = new MySqlCommand(
+                        "SELECT s.ID, s.Name, s.Surname, s.Patronymic, c.Name AS ClassName, d.Dormitory_Number, r.Room_Number " +
+                        "FROM students s " +
+                        "INNER JOIN classes c ON s.Class_ID = c.ID " +
+                        "INNER JOIN dorms d ON s.Dormitory_ID = d.ID " +
+                        "INNER JOIN rooms r ON s.Room_ID = r.ID " +
+                        "WHERE s.Class_ID = @classid", connection);
+
+                    adapter.SelectCommand.Parameters.AddWithValue("@classid", classID);
+
+                    adapter.Fill(dtStudents);
+                }
+            }
+
+            return dtStudents;
+        }
+
+        public int addClass(Class classes)
+        {
 
             MySqlConnection connection = new MySqlConnection(connectionString);
             connection.Open();
-            MySqlCommand command = new MySqlCommand();
 
-            command.CommandText = "SELECT s.ID, s.Name, s.Surname, s.Patronymic, c.Name AS ClassName, d.Dormitory_Number, r.Room_Number " +
-                      "FROM students s " +
-                      "INNER JOIN classes c ON s.Class_ID = c.ID " +
-                      "INNER JOIN dorms d ON s.Dormitory_ID = d.ID " +
-                      "INNER JOIN rooms r ON s.Room_ID = r.ID " +
-                      "WHERE s.Class_ID = @classid";
-
-            command.Parameters.AddWithValue("@classid", classesID);
-            command.Connection = connection;
-
-            using (MySqlDataReader reader = command.ExecuteReader())
+            using (MySqlCommand checkCommand = new MySqlCommand("SELECT COUNT(*) FROM `classes` WHERE `Name` = @name", connection))
             {
-                while (reader.Read())
+                checkCommand.Parameters.AddWithValue("@name", classes.Name);
+                int existingCount = Convert.ToInt32(checkCommand.ExecuteScalar());
+                if (existingCount > 0)
                 {
-                    Student s = new Student()
-                    {
-                        ID = reader.GetInt32(0),
-                        FirstName = reader.GetString(1),
-                        SecondName = reader.GetString(2),
-                        ThirdName = reader.GetString(3),
-                        ClassName = reader.GetString(4),
-                        Dormitory = reader.GetInt32(5),
-                        Room = reader.GetInt32(6),
-                    };
-                    returnThese.Add(s);
+                    MessageBox.Show("The name already exists in the classes table. Insertion failed.");
+                }
+                else
+                {
+                    MySqlCommand command = new MySqlCommand("INSERT INTO `classes` (`ID`, `Name`) VALUES (NULL, @name);", connection);
+                    command.Parameters.AddWithValue("@name", classes.Name);
+                    int newRows = command.ExecuteNonQuery();
+                    MessageBox.Show("Insertion completed successfully.");
+                    return newRows;
                 }
             }
             connection.Close();
-            return returnThese;
+            return 1;
         }
-        //public List<Student> getClassesForStudent(int studentsID)
-        //{
-        //    List<Student> returnThese = new List<Student>();
 
-        //    MySqlConnection connection = new MySqlConnection(connectionString);
-        //    connection.Open();
-        //    MySqlCommand command = new MySqlCommand();
+        public bool deleteClass(int classID)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
 
-        //    command.CommandText = "SELECT * FROM students WHERE Class_ID = @classid";
-        //    command.Parameters.AddWithValue("@classid", studentsID);
-        //    command.Connection = connection;
+                CheckDependenciesBeforeDelete(classID, connection);
 
-        //    using (MySqlDataReader reader = command.ExecuteReader())
-        //    {
-        //        while (reader.Read())
-        //        {
-        //            Student s = new Student()
-        //            {
-        //                ID = reader.GetInt32(0),
-        //                FirstName = reader.GetString(1),
-        //                SecondName = reader.GetString(2),
-        //                ThirdName = reader.GetString(3)
+                using (MySqlCommand deleteCommand = new MySqlCommand("DELETE FROM `classes` WHERE `ID` = @classID", connection))
+                {
+                    using (MySqlCommand command = new MySqlCommand("UPDATE `students` SET `Class_ID` = @newClassID WHERE `Class_ID` = @classID", connection))
+                    {
+                        command.Parameters.AddWithValue("@newClassID", 0);
+                        command.Parameters.AddWithValue("@classID", classID);
+                        command.ExecuteNonQuery();
+                    }
+                    deleteCommand.Parameters.AddWithValue("@classID", classID);
+                    deleteCommand.ExecuteNonQuery();
+                }
+                connection.Close();
 
-        //                //ClassNumber = reader.GetString(4),
-        //                //DormitoryNumber = reader.IsDBNull(5) ? 0 : reader.GetInt32(5),
-        //                //Room_ID = (reader.IsDBNull(6) ? 0 : reader.GetInt32(6))
-        //            };
-        //            returnThese.Add(s);
-        //        }
-        //    }
-        //    connection.Close();
+                // The class and its dependencies are successfully deleted
+                return true;
+            }
+        }
 
-        //    return returnThese;
-        //}
+        private bool CheckDependenciesBeforeDelete(int classID, MySqlConnection connection)
+        {
+            using (MySqlCommand commandStudents = new MySqlCommand("SELECT COUNT(*) FROM `students` WHERE `Class_ID` = @classID", connection))
+            {
+                commandStudents.Parameters.AddWithValue("@classID", classID);
+                int studentCount = Convert.ToInt32(commandStudents.ExecuteScalar());
+                if (studentCount > 0)
+                {
+                    // There are dependencies in `students` table
+                    return false;
+                }
+            }
+            // There are no dependencies in `students` table
+            return true;
+        }
 
         public DataTable GetClassesData()
         {
@@ -416,59 +291,77 @@ namespace WinFormsApp
 
             return dt;
         }
-        public int addClass(Class classes)
+
+        public DataTable GetDormitoryData()
         {
+            DataTable dt = new DataTable();
             MySqlConnection connection = new MySqlConnection(connectionString);
-            connection.Open();
-            MySqlCommand command = new MySqlCommand("INSERT INTO `classes` (`ID`, `Name`) VALUES (NULL, @name);", connection);
-            command.Parameters.AddWithValue("@name", classes.Name);
-
-            int newRows = command.ExecuteNonQuery();
-            connection.Close();
-
-            return newRows;
-        }
-
-        public bool deleteClass(int classID)
-        {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            try
             {
                 connection.Open();
 
-
-                CheckDependenciesBeforeDelete(classID, connection);
-
-                using (MySqlCommand deleteCommand = new MySqlCommand("DELETE FROM `classes` WHERE `ID` = @classID", connection))
+                using (MySqlCommand command = new MySqlCommand("SELECT ID, Dormitory_Number FROM dorms", connection))
                 {
-                    using (MySqlCommand command = new MySqlCommand("UPDATE `students` SET `Class_ID` = @newClassID WHERE `Class_ID` = @classID", connection))
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
                     {
-                        command.Parameters.AddWithValue("@newClassID", 0);
-                        command.Parameters.AddWithValue("@classID", classID);
-                        command.ExecuteNonQuery();
+                        adapter.Fill(dt);
                     }
-                    deleteCommand.Parameters.AddWithValue("@classID", classID);
-                    deleteCommand.ExecuteNonQuery();
                 }
-                connection.Close();
-
-                // The class and its dependencies are successfully deleted
-                return true;
             }
-        }
-        private bool CheckDependenciesBeforeDelete(int classID, MySqlConnection connection)
-        {
-            using (MySqlCommand commandStudents = new MySqlCommand("SELECT COUNT(*) FROM `students` WHERE `Class_ID` = @classID", connection))
+            catch (Exception ex)
             {
-                commandStudents.Parameters.AddWithValue("@classID", classID);
-                int studentCount = Convert.ToInt32(commandStudents.ExecuteScalar());
-                if (studentCount > 0)
-                {
-                    // There are dependencies in `students` table
-                    return false;
-                }
+                MessageBox.Show("Error: " + ex.Message);
             }
-            // There are no dependencies in `students` table
-            return true;
+            finally
+            {
+                connection.Close();
+            }
+
+            return dt;
         }
+
+        public DataTable GetRoomsData(int dormID)
+        {
+            DataTable dt = new DataTable();
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            try
+            {
+
+                connection.Open();
+                if (dormID == null)
+                {
+                    using (MySqlCommand command = new MySqlCommand("SELECT ID, Room_Number FROM rooms", connection))
+                    {
+                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
+                        {
+                            adapter.Fill(dt);
+                        }
+                    }
+                }
+                else
+                {
+                    using (MySqlCommand command = new MySqlCommand("SELECT ID, Room_Number FROM rooms WHERE dorms_ID = @dormID", connection))
+                    {
+                        command.Parameters.AddWithValue("@dormID", dormID);
+                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
+                        {
+                            adapter.Fill(dt);
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+            return dt;
+        }
+
     }
 }

@@ -24,8 +24,11 @@ namespace WinFormsApp.Forms
             //InitializeDataGridViewStudents();
 
             SearchComboBox.SelectedIndex = 0;
-            dataGridViewStudents.DataSource = studentsDAO.getAllStudents();
-            classesBindingSource.DataSource = classesDAO.getAllClasses();
+
+            dataGridViewStudents.DataSource = studentsDAO.GetStudentsData();
+            //dataGridViewStudents.DataSource = studentsDAO.getAllStudents();
+            //classesBindingSource.DataSource = classesDAO.getAllClasses();
+            classesBindingSource.DataSource = classesDAO.GetAllClasses();
 
             dataGridViewClasses.DataSource = classesBindingSource;
             dataGridViewClasses.Columns[0].Visible = false;
@@ -68,14 +71,14 @@ namespace WinFormsApp.Forms
         private void dataGridViewClasses_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int rowClicked = dataGridViewClasses.CurrentRow.Index;
-            StudentsDAO studentsDAO = new StudentsDAO();
             if (rowClicked == dataGridViewClasses.Rows.Count - 1)
             {
-                dataGridViewStudents.DataSource = studentsDAO.getAllStudents();
+                //dataGridViewStudents.DataSource = studentsDAO.getAllStudents();
+                dataGridViewClasses.DataSource = studentsDAO.GetClassesData();
             }
             else
             {
-                studentBindingSource.DataSource = studentsDAO.getStudentsForClass((int)dataGridViewClasses.Rows[rowClicked].Cells[0].Value);
+                studentBindingSource.DataSource = studentsDAO.GetStudentsForClass((int)dataGridViewClasses.Rows[rowClicked].Cells[0].Value);
                 dataGridViewStudents.DataSource = studentBindingSource;
             }
         }
@@ -90,10 +93,8 @@ namespace WinFormsApp.Forms
 
         private void search_Button_Click(object sender, EventArgs e)
         {
-            int rowClicked = dataGridViewClasses.CurrentRow.Index;
-            MessageBox.Show("Row selected: " + rowClicked);
-            StudentsDAO studentsDAO = new StudentsDAO();
-            studentBindingSource.DataSource = studentsDAO.searchTitles(searchTextBox.Text, SearchComboBox);
+
+            studentBindingSource.DataSource = studentsDAO.SearchTitles(searchTextBox.Text, SearchComboBox);
             dataGridViewStudents.DataSource = studentBindingSource;
         }
 
@@ -110,18 +111,30 @@ namespace WinFormsApp.Forms
             studentsDAO.deleteStudent(studentID);
 
             //dataGridViewStudents.DataSource = null;
-            dataGridViewStudents.DataSource = studentsDAO.getAllStudents();
-            //deleteStudent_Button.Enabled = false;
 
+            studentsDAO.GetStudentsData();
+            //dataGridViewStudents.DataSource = studentsDAO.getAllStudents();
+            //deleteStudent_Button.Enabled = false;
+            dataGridViewStudents.DataSource = studentsDAO.GetStudentsData();
         }
+
         private void deleteClass_Button_Click(object sender, EventArgs e)
         {
             int rowClicked = dataGridViewClasses.CurrentRow.Index;
 
             int classID = (int)dataGridViewClasses.Rows[rowClicked].Cells[0].Value;
-            studentsDAO.deleteClass(classID);
+            if (classID == 0)
+            {
+                MessageBox.Show("You cannot delete this class.");
+            }
+            else
+            {
+                studentsDAO.deleteClass(classID);
+            }
 
-            dataGridViewStudents.DataSource = studentsDAO.getAllStudents();
+            dataGridViewStudents.DataSource = studentsDAO.GetStudentsData();
+            dataGridViewClasses.DataSource = studentsDAO.GetClassesData();
+            //dataGridViewStudents.DataSource = studentsDAO.getAllStudents();
             //deleteStudent_Button.Enabled = false;
         }
 
@@ -133,11 +146,17 @@ namespace WinFormsApp.Forms
 
         private void Refresh_Button_Click(object sender, EventArgs e)
         {
-            dataGridViewStudents.DataSource = studentsDAO.getAllStudents();
-            classesBindingSource.DataSource = classesDAO.getAllClasses();
+            //dataGridViewStudents.DataSource = studentsDAO.getAllStudents();
+            dataGridViewStudents.DataSource = studentsDAO.GetStudentsData();
+            //classesBindingSource.DataSource = classesDAO.getAllClasses();
+            classesBindingSource.DataSource = classesDAO.GetAllClasses();
             dataGridViewClasses.Columns[0].Visible = false;
         }
 
-
+        private void dataGridViewStudents_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            AddingStudentForm editStudentForm = new AddingStudentForm();
+            editStudentForm.Show();
+        }
     }
 }

@@ -18,7 +18,8 @@ namespace WinFormsApp
         {
             InitializeComponent();
             StudentsDAO studentsDAO = new StudentsDAO();
-            studentBindingSource.DataSource = studentsDAO.getAllStudents();
+            studentBindingSource.DataSource = studentsDAO.GetStudentsData();
+            //studentBindingSource.DataSource = studentsDAO.getAllStudents();
             dataGridViewStudents.DataSource = studentBindingSource;
             searchComboBox.SelectedIndex = 0;
             dataGridViewStudents.Columns[4].Visible = false;
@@ -29,7 +30,7 @@ namespace WinFormsApp
         private void search_Button_Click(object sender, EventArgs e)
         {
             StudentsDAO studentsDAO = new StudentsDAO();
-            studentBindingSource.DataSource = studentsDAO.searchTitles(searchTextBox.Text, searchComboBox);
+            studentBindingSource.DataSource = studentsDAO.SearchTitles(searchTextBox.Text, searchComboBox);
             dataGridViewStudents.DataSource = studentBindingSource;
         }
         private void backToMenu_button_Click(object sender, EventArgs e)

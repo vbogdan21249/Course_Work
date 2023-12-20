@@ -74,7 +74,7 @@
             Cancel_Button.TabIndex = 9;
             Cancel_Button.Text = "Cancel";
             Cancel_Button.UseVisualStyleBackColor = true;
-            Cancel_Button.Click += Cancel_Button_Click_1;
+
             // 
             // label2
             // 

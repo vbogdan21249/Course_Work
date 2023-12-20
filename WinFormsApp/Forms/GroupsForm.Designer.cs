@@ -58,6 +58,7 @@
             dataGridViewClasses.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewClasses.Location = new Point(178, 82);
             dataGridViewClasses.Name = "dataGridViewClasses";
+            dataGridViewClasses.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridViewClasses.Size = new Size(143, 301);
             dataGridViewClasses.TabIndex = 2;
             dataGridViewClasses.CellClick += dataGridViewClasses_CellClick;
@@ -122,11 +123,15 @@
             // 
             // dataGridViewStudents
             // 
+            dataGridViewStudents.AllowUserToAddRows = false;
+            dataGridViewStudents.AllowUserToDeleteRows = false;
             dataGridViewStudents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewStudents.Location = new Point(341, 64);
             dataGridViewStudents.Name = "dataGridViewStudents";
+            dataGridViewStudents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridViewStudents.Size = new Size(447, 319);
             dataGridViewStudents.TabIndex = 3;
+            dataGridViewStudents.CellDoubleClick += dataGridViewStudents_CellDoubleClick;
             // 
             // Refresh_Button
             // 
